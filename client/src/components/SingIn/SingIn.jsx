@@ -76,30 +76,34 @@ const SignUpLink = styled('span')({
     cursor: 'pointer',
 });
 
-
 function SignIn() {
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);
+    const [loginError, setLoginError] = useState('');
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoginError('');
+
         try {
             const res = await fetch('http://localhost:8080/api/users/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ emailOrPhone, password }),
             });
+
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || 'Login failed');
+
             sessionStorage.setItem('userId', data.user.id);
             if (remember) {
                 document.cookie = `token=${data.token}; path=/; max-age=3600`;
             }
             navigate(`/userprofile/${data.user.id}`);
         } catch (err) {
-            alert(err.message);
+            setLoginError(err.message);
         }
     };
 
@@ -143,6 +147,14 @@ function SignIn() {
                             }
                             label="Remember me"
                         />
+                        {loginError && (
+                            <Typography
+                                variant="body2"
+                                sx={{ color: '#f44336', mt: 1 }}
+                            >
+                                {loginError}
+                            </Typography>
+                        )}
                         <StyledButton
                             type="submit"
                             fullWidth

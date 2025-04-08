@@ -4,7 +4,7 @@ import { Container, TextField, Button, Typography, Box, MenuItem } from '@mui/ma
 import { styled } from '@mui/material/styles';
 import Footer from '../Footer/Footer';
 import backgroundImage from '../../assets/netflix.png';
-import './SingUp.css'
+import './SingUp.css';
 
 const PageWrapper = styled(Box)({
     minHeight: '100vh',
@@ -56,14 +56,31 @@ function SingUp() {
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('user');
+    const [passwordError, setPasswordError] = useState('');
+    const [emailError, setEmailError] = useState('');
     const navigate = useNavigate();
+
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const isValidPhone = (phone) => /^\d{9,15}$/.test(phone);
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        if (password.length < 8 || !/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
-            alert('Password must have at least 8 characters, one letter, and one number');
-            return;
+        let valid = true;
+
+        setPasswordError('');
+        setEmailError('');
+
+        if (!isValidEmail(emailOrPhone) && !isValidPhone(emailOrPhone)) {
+            setEmailError('Please enter a valid email address or phone number');
+            valid = false;
         }
+
+        if (password.length < 8 || !/\d/.test(password) || !/[a-zA-Z]/.test(password)) {
+            setPasswordError('Password must be at least 8 characters, contain a letter and a number');
+            valid = false;
+        }
+
+        if (!valid) return;
 
         try {
             const res = await fetch('http://localhost:8080/api/users/register', {
@@ -77,7 +94,7 @@ function SingUp() {
 
             navigate('/');
         } catch (err) {
-            alert(err.message);
+            setEmailError(err.message);
         }
     };
 
@@ -100,6 +117,8 @@ function SingUp() {
                             margin="normal"
                             value={emailOrPhone}
                             onChange={(e) => setEmailOrPhone(e.target.value)}
+                            error={!!emailError}
+                            helperText={emailError}
                         />
                         <StyledTextField
                             label="Password"
@@ -110,6 +129,8 @@ function SingUp() {
                             margin="normal"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            error={!!passwordError}
+                            helperText={passwordError}
                         />
                         <StyledTextField
                             label="Role"
@@ -141,4 +162,3 @@ function SingUp() {
 };
 
 export default SingUp;
-
