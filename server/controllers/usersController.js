@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Profile = require("../models/profilesModel");
 const jwt = require("jsonwebtoken");
 
 const usersController = {
@@ -27,6 +28,16 @@ const usersController = {
 
             await newUser.save();
 
+            const avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png', 'avatar5.png'];
+            const randomAvatar = avatars[Math.floor(Math.random() * avatars.length)];
+            const newProfile = new Profile({
+                name: "New user",
+                image: randomAvatar,
+                userId: newUser._id,
+            });
+
+            await newProfile.save();
+
             res.status(201).json({
                 message: "User registered successfully",
                 user: { emailOrPhone: newUser.emailOrPhone, role: newUser.role }
@@ -34,7 +45,7 @@ const usersController = {
         } catch (error) {
             res.status(500).json({ message: "Server error", error });
         }
-    },async login(req, res) {
+    }, async login(req, res) {
         const { emailOrPhone, password } = req.body;
         if (!emailOrPhone || !password) {
             return res.status(400).json({ message: "Missing email/phone or password." });

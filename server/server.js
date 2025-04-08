@@ -3,10 +3,10 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const path = require("path");
-// const logger = require('morgan');
 const port = process.env.PORT || 8080;
 
 const { usersRouter } = require('./routers/usersRouter');
+const { profilesRouter } = require('./routers/profilesRouter');
 
 // app.use((req, res, next) => {
 //     if (req.headers["x-forwarded-proto"] !== "https" && process.env.NODE_ENV === "production") {
@@ -33,9 +33,10 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(logger("dev"));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/api/users', usersRouter);
+app.use('/api/profiles', profilesRouter);
 
 app.use((req, res) => {
     res.status(400).send("Page wasn't found");
