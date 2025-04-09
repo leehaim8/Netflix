@@ -1,8 +1,7 @@
-// Footer.jsx
 import React from "react";
 import "./Footer.css";
 
-const Footer = () => {
+function Footer() {
     const links = [
         "FAQ",
         "Help Center",

@@ -100,7 +100,10 @@ function SignIn() {
             sessionStorage.setItem('userId', data.user.id);
             if (remember) {
                 document.cookie = `token=${data.token}; path=/; max-age=3600`;
+            } else {
+                sessionStorage.setItem('token', data.token);
             }
+
             navigate(`/userprofile/${data.user.id}`);
         } catch (err) {
             setLoginError(err.message);
