@@ -19,7 +19,25 @@ const profilesController = {
             res.status(500).json({ error: 'Failed to fetch profiles' });
         }
 
-    }, async createProfile(req, res) {
+    },
+    async getProfileByProfileId(req, res) {
+        const profileId = req.params.profileId;
+        if (!profileId) {
+            return res.status(400).json({ message: "Profile ID is required" });
+        }
+
+        try {
+            const profile = await Profile.findOne({ _id: profileId });
+            if (!profile) {
+                return res.status(404).json({ message: "Profile not found." });
+            }
+
+            res.json(profile);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to fetch profile' });
+        }
+    },
+    async createProfile(req, res) {
         const { name, userId } = req.body;
         if (!name || !userId) {
             return res.status(400).json({ message: "Missing fields" });

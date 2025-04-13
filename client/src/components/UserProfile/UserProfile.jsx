@@ -11,16 +11,18 @@ function UserProfile() {
     const navigate = useNavigate();
 
     const userId = sessionStorage.getItem('userId');
-    const token = document.cookie
+    const tokenFromCookie = document.cookie
         .split('; ')
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
 
+    const tokenFromSession = sessionStorage.getItem('token');
+    const token = tokenFromCookie || tokenFromSession;
 
     useEffect(() => {
         const fetchProfiles = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/profiles/${userId}`, {
+                const res = await fetch(`http://localhost:8080/api/profiles/byUser/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -48,7 +50,7 @@ function UserProfile() {
         try {
             const res = await fetch(`http://localhost:8080/api/profiles/updateProfile/${id}`, {
                 method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` ,'Content-Type': 'application/json' },
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: nameInput }),
             });
             const result = await res.json();
@@ -75,7 +77,7 @@ function UserProfile() {
     };
 
     const handleProfileClick = (id) => {
-        navigate(`/content/${id}`);
+        navigate(`/homepage/${id}`);
     };
 
     const handleAddProfile = async () => {
