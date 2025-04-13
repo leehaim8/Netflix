@@ -5,7 +5,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate } from 'react-router-dom';
 
-function Header() {
+function Header(props) {
     const [showDropdown, setShowDropdown] = useState(false);
     const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ function Header() {
                 <SearchIcon className="header-icon" />
                 <NotificationsNoneIcon className="header-icon" />
                 <div className="header-profile" onClick={handleProfileClick}>
-                    <img src="/avatar1.png" alt="Profile" className="header-avatar-profile" />
+                    <img src={`http://localhost:8080/Public/${props.image}`} alt="Profile" className="header-avatar-profile" />
                     <ArrowDropDownIcon className="header-dropdown-icon" />
                     {showDropdown && (
                         <div className="header-dropdown-menu">
