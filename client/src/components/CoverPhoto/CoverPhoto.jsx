@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import './CoverPhoto.css';
 
-function CoverPhoto() {
-  const [banners, setBanners] = useState([]);
+function CoverPhoto(props) {
+  const [CoverPhoto, setCoverPhotos] = useState([]);
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('http://localhost:8080/api/movies/popular');
+      const res = await fetch(`http://localhost:8080/${props.fetchUrl}`);
       const data = await res.json();
-      setBanners(data.results.slice(0, 4));
+      setCoverPhotos(data.results.slice(0, 4));
     };
 
     fetchData();
-  }, []);
+  }, [props.fetchUrl]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -23,9 +23,9 @@ function CoverPhoto() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!banners.length) return null;
+  if (!CoverPhoto.length) return null;
 
-  const movie = banners[current];
+  const movie = CoverPhoto[current];
   const formattedTitle = (movie.title || movie.name || '').split(' ').join('\n');
 
   return (
