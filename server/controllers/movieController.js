@@ -77,6 +77,113 @@ const movieController = {
         } catch (err) {
             res.status(500).json({ message: `Failed to fetch ${req.params.genreName}` });
         }
+    },
+    async getPopularTv(req, res) {
+        try {
+            const response = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
+            const data = await response.json();
+            res.json(data);
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch popular TV shows' });
+        }
+    },
+    async getNewTv(req, res) {
+        try {
+            const response = await fetch(`${BASE_URL}/tv/on_the_air?api_key=${API_KEY}`);
+            const data = await response.json();
+            res.json(data);
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch new TV shows' });
+        }
+    },
+    async getTop10Tv(req, res) {
+        try {
+            const response = await fetch(`${BASE_URL}/tv/top_rated?api_key=${API_KEY}`);
+            const data = await response.json();
+            const top10 = data.results.sort((a, b) => b.vote_average - a.vote_average).slice(0, 10);
+            res.json({ results: top10 });
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch top 10 TV shows' });
+        }
+    },
+    async getByGenreTv(req, res) {
+        try {
+            const genreMap = {
+                Animation: 16,
+                Drama: 18,
+            };
+
+            const genreName = req.params.genreName;
+            const genreId = genreMap[genreName];
+
+            if (!genreId) {
+                return res.status(400).json({ message: 'Unknown genre' });
+            }
+
+            const response = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`);
+            const data = await response.json();
+
+            const sorted = data.results.sort((a, b) => b.popularity - a.popularity);
+
+            res.json({ results: sorted });
+        } catch (err) {
+            res.status(500).json({ message: `Failed to fetch ${req.params.genreName} TV shows` });
+        }
+    },
+    async getPopularMovies(req, res) {
+        try {
+            const response = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+            const data = await response.json();
+            res.json(data);
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch popular movies' });
+        }
+    },
+
+    async getNewMovies(req, res) {
+        try {
+            const response = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
+            const data = await response.json();
+            res.json(data);
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch new movies' });
+        }
+    },
+
+    async getTop10Movies(req, res) {
+        try {
+            const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
+            const data = await response.json();
+            const top10 = data.results.sort((a, b) => b.vote_average - a.vote_average).slice(0, 10);
+            res.json({ results: top10 });
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch top 10 movies' });
+        }
+    },
+
+    async getByGenreMovies(req, res) {
+        try {
+            const genreMap = {
+                Animation: 16,
+                Drama: 18,
+            };
+
+            const genreName = req.params.genreName;
+            const genreId = genreMap[genreName];
+
+            if (!genreId) {
+                return res.status(400).json({ message: 'Unknown genre' });
+            }
+
+            const response = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
+            const data = await response.json();
+
+            const sorted = data.results.sort((a, b) => b.popularity - a.popularity);
+
+            res.json({ results: sorted });
+        } catch (err) {
+            res.status(500).json({ message: `Failed to fetch ${req.params.genreName} movies` });
+        }
     }
 };
 

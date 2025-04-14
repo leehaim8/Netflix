@@ -38,7 +38,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/api/users', usersRouter);
 app.use('/api/profiles', profilesRouter);
-app.use('/api/movies', movieRouter);
+app.use('/api/moviesAndTv', movieRouter);
 
 app.use((req, res) => {
     res.status(400).send("Page wasn't found");
