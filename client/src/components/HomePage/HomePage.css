@@ -1,0 +1,12 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+}
+
+.app {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
