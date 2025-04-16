@@ -18,5 +18,6 @@ movieRouter.get('/movie/new', movieController.getNewMovies);
 movieRouter.get('/movie/top10', movieController.getTop10Movies);
 movieRouter.get('/movie/genre/:genreName', movieController.getByGenreMovies);
 
+movieRouter.get('/byId/:id', movieController.getMovieAndTvById);
 
 module.exports = { movieRouter };

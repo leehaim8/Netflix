@@ -2,6 +2,39 @@ const API_KEY = process.env.API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 const movieController = {
+    async getMovieAndTvById(req, res) {
+        const { id } = req.params;
+        const { name } = req.query;
+        const checkNameMatch = (tmdbData) => {
+            const tmdbName = tmdbData.title || tmdbData.name || '';
+            return tmdbName.toLowerCase() === name.toLowerCase();
+        };
+
+        try {
+            let response = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
+            if (response.ok) {
+                const data = await response.json();
+                if (checkNameMatch(data)) {
+                    return res.json(data);
+                }
+            }
+
+            response = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=en-US&append_to_response=credits`);
+            if (response.ok) {
+                const data = await response.json();
+                if (checkNameMatch(data)) {
+                    return res.json(data);
+                }
+            }
+
+            return res.status(404).json({ error: 'No matching movie or tv show found with that ID and name' });
+
+        } catch (error) {
+            console.error('Error fetching from TMDB:', error);
+            res.status(500).json({ error: 'Server error while fetching data' });
+        }
+    }
+    ,
     async getPopularMoviesAndTv(req, res) {
         try {
             const response = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}`);
