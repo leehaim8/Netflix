@@ -4,6 +4,7 @@ import Header from './Header/Header';
 import HomePageFooter from './HomePageFooter/HomePageFooter';
 import Banner from './CoverPhoto/CoverPhoto';
 import Row from './Row/Row';
+import Modal from './Model/Model';
 
 function TvShows() {
     const location = useLocation();
@@ -18,6 +19,7 @@ function TvShows() {
     const tokenFromSession = sessionStorage.getItem('token');
     const token = tokenFromCookie || tokenFromSession;
 
+    const [modalData, setModalData] = useState(null);
     const [profile, setProfile] = useState([]);
 
     useEffect(() => {
@@ -40,17 +42,30 @@ function TvShows() {
         }
     }, [profileId, token]);
 
+    const handleShowModal = (item) => {
+        setModalData(item);
+    };
+
+    const handleCloseModal = () => {
+        setModalData(null);
+    };
 
     return (
         <div className="app">
             {profile.image && <Header image={profile.image} />}
 
             <main className="main-content">
-                <Banner fetchUrl="api/moviesAndTv/tv/popular"  />
-                <Row title="New on Netflix" fetchUrl="/api/moviesAndTv/tv/new" />
-                <Row title="Top 10 Tv in the U.S. Today" fetchUrl="/api/moviesAndTv/tv/top10" />
-                <Row title="Animation" fetchUrl="/api/moviesAndTv/tv/genre/Animation"  />
-                <Row title="Drama" fetchUrl="/api/moviesAndTv/tv/genre/Drama"/>
+                <Banner fetchUrl="api/moviesAndTv/tv/popular" onMoreInfo={handleShowModal} />
+                <Row title="New on Netflix" fetchUrl="/api/moviesAndTv/tv/new" onItemClick={handleShowModal} />
+                <Row title="Top 10 Tv in the U.S. Today" fetchUrl="/api/moviesAndTv/tv/top10" onItemClick={handleShowModal} />
+                <Row title="Animation" fetchUrl="/api/moviesAndTv/tv/genre/Animation" onItemClick={handleShowModal} />
+                <Row title="Drama" fetchUrl="/api/moviesAndTv/tv/genre/Drama" onItemClick={handleShowModal} />
+                {modalData && (
+                    <Modal
+                        modalData={modalData}
+                        onClose={handleCloseModal}
+                    />
+                )}
             </main>
 
             <HomePageFooter />
