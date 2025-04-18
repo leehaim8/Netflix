@@ -8,6 +8,7 @@ const port = process.env.PORT || 8080;
 const { usersRouter } = require('./routers/usersRouter');
 const { profilesRouter } = require('./routers/profilesRouter');
 const { movieRouter } = require('./routers/movieRouter');
+const { reviewRouter } = require('./routers/reviewRouter');
 
 // app.use((req, res, next) => {
 //     if (req.headers["x-forwarded-proto"] !== "https" && process.env.NODE_ENV === "production") {
@@ -39,6 +40,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/api/users', usersRouter);
 app.use('/api/profiles', profilesRouter);
 app.use('/api/moviesAndTv', movieRouter);
+app.use('/api/reviews', reviewRouter);
 
 app.use((req, res) => {
     res.status(400).send("Page wasn't found");

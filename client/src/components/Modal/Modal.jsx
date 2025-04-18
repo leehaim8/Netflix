@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './Model.css';
+import './Modal.css';
 
 const genreTagsMap = {
     Drama: ["Emotional", "Character-driven"],
