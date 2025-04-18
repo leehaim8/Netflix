@@ -21,7 +21,7 @@ const ratingWarningsMap = {
     "PG": ["Mild Language"],
 };
 
-function Modal(props) {
+function Model(props) {
     const [data, setData] = useState(null);
 
     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
@@ -29,6 +29,7 @@ function Modal(props) {
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!props.modalData || !props.modalData.id) return;
             try {
                 const res = await fetch(`http://localhost:8080/api/moviesAndTv/byId/${props.modalData.id}?name=${props.modalData.title || props.modalData.name}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -74,7 +75,10 @@ function Modal(props) {
                         <h1 className="modal-title">{data.title || data.name}</h1>
                         <div className="modal-buttons">
                             <button className="btn btn-review" onClick={props.onReviewClick}>▶ Review</button>
-                            <button className="btn btn-add" onClick={props.onAddToWatchlist}>＋</button>
+                            <button className="btn btn-add" onClick={(e) => {
+                                e.stopPropagation();
+                                props.onAddToWatchlist();
+                            }}>＋</button>
                         </div>
                     </div>
                 </div>
@@ -111,4 +115,4 @@ function Modal(props) {
     );
 }
 
-export default Modal;
+export default Model;

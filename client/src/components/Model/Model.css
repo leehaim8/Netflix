@@ -41,6 +41,8 @@
 .modal-cover {
     width: 100%;
     height: auto;
+    z-index: 0;
+    position: relative;
 }
 
 .modal-title-overlay-bottom {
@@ -78,6 +80,8 @@
 
 .modal-buttons {
     margin-top: 10px;
+    position: relative;
+    z-index: 2;
 }
 
 .btn {
@@ -88,6 +92,7 @@
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
+    z-index: 3;
 }
 
 .btn-review {

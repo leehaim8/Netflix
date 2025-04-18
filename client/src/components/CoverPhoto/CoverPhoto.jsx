@@ -44,7 +44,7 @@ function CoverPhoto(props) {
 
         <h1 className="cover-photo-title">{formattedTitle}</h1>
         <p className="cover-photo-description">{movie.overview}</p>
-        <button className="cover-photo-button">
+        <button className="cover-photo-button" onClick={() => props.onMoreInfo(movie)}>
           <InfoOutlineIcon />
           <p>More info</p>
         </button>
