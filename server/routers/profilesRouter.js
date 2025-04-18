@@ -10,4 +10,6 @@ profilesRouter.post('/addProfile/:userId', authMiddleware.authToken, profilesCon
 profilesRouter.put('/updateProfile/:id', authMiddleware.authToken, profilesController.updateProfile);
 profilesRouter.delete('/deleteProfile/:id', authMiddleware.authToken, profilesController.deleteProfile);
 
+profilesRouter.post('/addFavorite/:profileId', authMiddleware.authToken, profilesController.addFavorite);
+
 module.exports = { profilesRouter };

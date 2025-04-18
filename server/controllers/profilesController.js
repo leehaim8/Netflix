@@ -93,6 +93,29 @@ const profilesController = {
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error", error: error.message });
         }
+    },
+    async addFavorite(req, res) {
+        const { profileId } = req.params;
+        const { id, title, poster } = req.body;
+        if (!id || !title || !poster) {
+            return res.status(400).json({ message: "Missing fields" });
+        }
+
+        try {
+            const profile = await Profile.findById(profileId);
+            if (!profile) {
+                return res.status(404).json({ message: "Profile not found" });
+            }
+            const alreadyExists = profile.favorites.some(fav => String(fav.id) === String(id));
+            if (alreadyExists) {
+                return res.status(409).json({ message: "Item already in favorites" });
+            }
+            profile.favorites.push({ id, title, poster });
+            await profile.save();
+            res.status(200).json({ message: "Added to favorites", favorites: profile.favorites });
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to add favorite', details: err.message });
+        }
     }
 };
 
