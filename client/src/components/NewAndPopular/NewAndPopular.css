@@ -1,0 +1,28 @@
+.new-and-popular {
+    padding-top: 80px;
+    padding-left: 70px;
+    padding-right: 40px;
+    background-color: black;
+    min-height: 100vh;
+    color: white;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 5px;
+}
+
+.grid-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    /* justify-content: space-evenly; */
+}
+
+.movie-item img {
+    width: 200px;
+    height: auto;
+    transition: transform
+}

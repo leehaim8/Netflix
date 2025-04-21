@@ -271,6 +271,55 @@ const movieController = {
         } catch (err) {
             res.status(500).json({ message: `Failed to fetch ${req.params.genreName} movies` });
         }
+    },
+    async getAllPopularAndNew(req, res) {
+        const page = req.query.page || 1;
+
+        try {
+            const [popularRes, newMoviesRes, newTvRes] = await Promise.all([
+                fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}&page=${page}`),
+                fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}&page=${page}`),
+                fetch(`${BASE_URL}/tv/on_the_air?api_key=${API_KEY}&page=${page}`)
+            ]);
+
+            const [popularData, newMoviesData, newTvData] = await Promise.all([
+                popularRes.json(),
+                newMoviesRes.json(),
+                newTvRes.json()
+            ]);
+
+            const dbMedia = await Media.find();
+
+            const allItems = [
+                ...(popularData.results || []).map(item => ({ ...item, media_type: item.media_type || (item.title ? 'movie' : 'tv') })),
+                ...(newMoviesData.results || []).map(item => ({ ...item, media_type: 'movie' })),
+                ...(newTvData.results || []).map(item => ({ ...item, media_type: 'tv' })),
+                ...dbMedia.map(item => ({ ...item.toObject() })),
+            ];
+
+            const seen = new Set();
+            const combined = [];
+
+            for (const item of allItems) {
+                if (!item.id || !item.media_type) continue;
+                const key = `${item.id}_${item.media_type}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                combined.push(item);
+            }
+
+            const sorted = combined.filter(item => item.popularity !== undefined).sort((a, b) => b.popularity - a.popularity);
+            const totalPages = Math.max(
+                popularData.total_pages || 1,
+                newMoviesData.total_pages || 1,
+                newTvData.total_pages || 1
+            );
+
+            res.json({ results: sorted, totalPages });
+        } catch (err) {
+            console.error('API error:', err);
+            res.status(500).json({ message: 'Failed to fetch combined popular and new content' });
+        }
     }
 };
 
