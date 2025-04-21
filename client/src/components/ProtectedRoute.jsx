@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function ProtectedRoute({ children, allowedRoles }) {
     const navigate = useNavigate();
+    const { id, userId, profileId } = useParams();
+
     const [loading, setLoading] = useState(true);
     const [authorized, setAuthorized] = useState(false);
 
@@ -15,6 +17,7 @@ function ProtectedRoute({ children, allowedRoles }) {
 
             const tokenFromSession = sessionStorage.getItem('token');
             const token = tokenFromCookie || tokenFromSession;
+
             if (!token) {
                 navigate('/');
                 return;
@@ -31,13 +34,20 @@ function ProtectedRoute({ children, allowedRoles }) {
                 if (!res.ok) throw new Error();
 
                 const userRole = data.user.role;
-                if (!allowedRoles || allowedRoles.includes(userRole)) {
+                const userIdFromToken = data.user.id;
+
+                const urlId = id || userId || profileId;
+
+                const isRoleAllowed = allowedRoles?.includes(userRole);
+                const isCorrectId = !urlId || urlId === userIdFromToken;
+
+                if (isRoleAllowed && isCorrectId) {
                     setAuthorized(true);
                 } else {
                     if (userRole === 'admin') {
-                        navigate('/admin-dashboard');
+                        navigate(`/adminHomePage/${userIdFromToken}`);
                     } else {
-                        navigate('/user-home');
+                        navigate(`/homepage/${userIdFromToken}`);
                     }
                 }
             } catch (error) {
@@ -48,8 +58,7 @@ function ProtectedRoute({ children, allowedRoles }) {
         };
 
         checkAuth();
-    }, [navigate, allowedRoles]);
-
+    }, [navigate, allowedRoles, id, userId, profileId]);
 
     if (loading) return <div>Loading...</div>;
 
