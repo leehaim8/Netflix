@@ -116,6 +116,18 @@ const profilesController = {
         } catch (err) {
             res.status(500).json({ error: 'Failed to add favorite', details: err.message });
         }
+    }, async getFavorites(req, res) {
+        const { profileId } = req.params;
+
+        try {
+            const profile = await Profile.findById(profileId);
+            if (!profile) {
+                return res.status(404).json({ message: "Profile not found" });
+            }
+            res.status(200).json(profile.favorites);
+        } catch (err) {
+            res.status(500).json({ error: 'Failed to fetch favorites', details: err.message });
+        }
     }
 };
 
