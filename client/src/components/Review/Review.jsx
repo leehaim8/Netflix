@@ -33,6 +33,11 @@ function ReviewPage() {
                 })
             });
 
+            if (res.status === 401 || res.status === 403) {
+                navigate('/');
+                return;
+            }
+
             const data = await res.json();
             if (res.ok) {
                 navigate(-1);

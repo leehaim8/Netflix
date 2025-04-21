@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Modal.css';
 
 const genreTagsMap = {
@@ -22,6 +23,7 @@ const ratingWarningsMap = {
 };
 
 function Model(props) {
+    const navigate = useNavigate();
     const [data, setData] = useState(null);
     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
         || sessionStorage.getItem('token');
@@ -33,6 +35,12 @@ function Model(props) {
                 const res = await fetch(`http://localhost:8080/api/moviesAndTv/byId/${props.modalData.id}?name=${props.modalData.title || props.modalData.name}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+
+                if (res.status === 401 || res.status === 403) {
+                    navigate('/');
+                    return;
+                }
+
                 const fetchedData = await res.json();
                 setData(fetchedData);
             } catch (error) {
@@ -41,7 +49,7 @@ function Model(props) {
         };
 
         fetchData();
-    }, [props.modalData, token]);
+    }, [props.modalData, token, navigate]);
 
     if (!data) return <div className="loading-modal">Loading...</div>;
 

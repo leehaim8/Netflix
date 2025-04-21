@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header/Header';
 import HomePageFooter from './HomePageFooter/HomePageFooter';
 import CoverPhoto from './CoverPhoto/CoverPhoto';
@@ -8,6 +8,7 @@ import Modal from './Modal/Modal';
 
 function TvShows() {
     const location = useLocation();
+    const navigate = useNavigate();
     const pathSegments = location.pathname.split('/');
     const profileId = pathSegments[pathSegments.length - 1];
 
@@ -30,6 +31,12 @@ function TvShows() {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                
+                if (res.status === 401 || res.status === 403) {
+                    navigate('/');
+                    return;
+                }
+
                 const data = await res.json();
                 setProfile(data);
             } catch (err) {
@@ -40,7 +47,7 @@ function TvShows() {
         if (profileId) {
             fetchProfiles();
         }
-    }, [profileId, token]);
+    }, [profileId, token, navigate]);
 
     const handleShowModal = (item) => {
         setModalData(item);
@@ -67,6 +74,12 @@ function TvShows() {
                 },
                 body: JSON.stringify(favorite)
             });
+
+            
+            if (res.status === 401 || res.status === 403) {
+                navigate('/');
+                return;
+            }
 
             if (!res.ok) {
                 throw new Error('Failed to add favorite');

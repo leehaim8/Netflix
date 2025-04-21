@@ -1,17 +1,37 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Row.css';
 
 const Row = (props) => {
+    const navigate = useNavigate();
     const [movies, setMovies] = useState([]);
+
+    const tokenFromCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+
+    const tokenFromSession = sessionStorage.getItem('token');
+    const token = tokenFromCookie || tokenFromSession;
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch(`http://localhost:8080${props.fetchUrl}`);
+            const res = await fetch(`http://localhost:8080${props.fetchUrl}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const data = await res.json();
+
+            if (res.status === 401 || res.status === 403) {
+                navigate('/');
+                return;
+            }
+
             setMovies(data.results);
         };
         fetchData();
-    }, [props.fetchUrl]);
+    }, [props.fetchUrl, token, navigate]);
     const isTop10 = props.title.includes("Top 10");
 
     return (

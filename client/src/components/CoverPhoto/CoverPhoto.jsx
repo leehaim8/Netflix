@@ -1,20 +1,40 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import './CoverPhoto.css';
 
 function CoverPhoto(props) {
+  const navigate = useNavigate();
   const [CoverPhoto, setCoverPhotos] = useState([]);
   const [current, setCurrent] = useState(0);
 
+  const tokenFromCookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('token='))
+    ?.split('=')[1];
+
+  const tokenFromSession = sessionStorage.getItem('token');
+  const token = tokenFromCookie || tokenFromSession;
+
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`http://localhost:8080/${props.fetchUrl}`);
+      const res = await fetch(`http://localhost:8080/${props.fetchUrl}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        navigate('/');
+        return;
+      }
+
       const data = await res.json();
       setCoverPhotos(data);
     };
 
     fetchData();
-  }, [props.fetchUrl]);
+  }, [props.fetchUrl, navigate]);
 
   useEffect(() => {
     const interval = setInterval(() => {

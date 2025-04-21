@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './UserProfile.css';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -10,7 +10,7 @@ function UserProfile() {
     const [nameInput, setNameInput] = useState('');
     const navigate = useNavigate();
 
-    const userId = sessionStorage.getItem('userId');
+    const { userId } = useParams();
     const tokenFromCookie = document.cookie
         .split('; ')
         .find(row => row.startsWith('token='))
@@ -27,6 +27,12 @@ function UserProfile() {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+
+                if (res.status === 401 || res.status === 403) {
+                    navigate('/');
+                    return;
+                }
+
                 const data = await res.json();
                 setProfiles(data);
             } catch (err) {
@@ -37,7 +43,7 @@ function UserProfile() {
         if (userId) {
             fetchProfiles();
         }
-    }, [userId, token]);
+    }, [userId, token, navigate]);
 
     const handleNameClick = (profile) => {
         setEditingId(profile._id);

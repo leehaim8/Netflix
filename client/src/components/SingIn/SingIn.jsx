@@ -104,7 +104,11 @@ function SignIn() {
                 sessionStorage.setItem('token', data.token);
             }
 
-            navigate(`/userprofile/${data.user.id}`);
+            if (data.user.role === "admin") {
+                navigate(`/adminHomePage/${data.user.id}`);
+            } else {
+                navigate(`/userprofile/${data.user.id}`);
+            }
         } catch (err) {
             setLoginError(err.message);
         }
