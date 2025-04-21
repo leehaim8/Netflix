@@ -16,8 +16,8 @@ function Header(props) {
         { label: 'Home', path: `/homepage/${profileId}` },
         { label: 'TV Shows', path: `/tvShows/${profileId}` },
         { label: 'Movies', path: `/movies/${profileId}` },
-        { label: 'New & Popular', path: '/new-popular' },
-        { label: 'My List', path: '/my-list' },
+        { label: 'New & Popular', path: `/newAndPopular/${profileId}` },
+        { label: 'My List', path: `/myList/${profileId}` },
         { label: 'Browse' },
     ];
 
