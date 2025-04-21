@@ -23,7 +23,6 @@ const ratingWarningsMap = {
 
 function Model(props) {
     const [data, setData] = useState(null);
-
     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
         || sessionStorage.getItem('token');
 
@@ -48,8 +47,18 @@ function Model(props) {
 
     const isTV = !!data.number_of_seasons;
     const releaseYear = (data.first_air_date || data.release_date)?.split('-')[0];
-    const castList = data.credits?.cast?.slice(0, 5).map(c => c.name).join(', ') || 'Not available';
-    const genres = data.genres?.map(g => g.name) || [];
+    const castList = Array.isArray(data.credits?.cast)
+        ? data.credits.cast.slice(0, 5).map(c => c.name).join(', ')
+        : Array.isArray(data.cast)
+            ? data.cast.slice(0, 5).join(', ')
+            : 'Not available';
+
+    const genres = Array.isArray(data.genres)
+        ? (typeof data.genres[0] === 'string'
+            ? data.genres
+            : data.genres.map(g => g.name))
+        : [];
+
 
     const tagSet = new Set();
     genres.forEach(g => {
@@ -66,7 +75,13 @@ function Model(props) {
                 <button className="modal-close" onClick={props.onClose}>✕</button>
 
                 <div className="modal-image-container">
-                    <img className="modal-cover" src={`https://image.tmdb.org/t/p/original${data.backdrop_path}`} alt={data.title || data.name} />
+                    <img className="modal-cover" src={
+                        data.poster_path
+                            ? `https://image.tmdb.org/t/p/w200${data.poster_path}`
+                            : data.poster?.startsWith('http')
+                                ? data.poster
+                                : `${data.poster?.replace(/^\/?/, '')}`
+                    } alt={data.title || data.name} />
 
                     <div className="modal-title-overlay-bottom">
                         <div className="netflix-title">

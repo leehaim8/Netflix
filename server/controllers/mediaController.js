@@ -10,20 +10,20 @@ const mediaController = {
                 adult, tmdbId, tags, cast
             } = req.body;
 
-            const media= new Media({
+            const media = new Media({
                 title,
                 type,
                 overview,
-                releaseDate,
+                release_date: releaseDate,
                 genres: genres?.split(',').map(g => g.trim()),
-                backdropPath,
-                posterPath,
-                numberOfSeasons: type === 'tv' ? Number(numberOfSeasons) : undefined,
+                backdrop_path: backdropPath,
+                poster_path: posterPath,
+                number_of_seasons: type === 'tv' ? Number(numberOfSeasons) : undefined,
                 voteAverage,
                 popularity,
-                originalLanguage,
+                original_language: originalLanguage,
                 adult,
-                tmdbId,
+                id,
                 tags: tags?.split(',').map(t => t.trim()),
                 cast: cast?.split(',').map(c => c.trim())
             });

@@ -19,11 +19,17 @@ const Row = (props) => {
             <h2>{props.title}</h2>
             <div className={`row-posters ${isTop10 ? 'top10-row' : ''}`}>
                 {movies.map((movie, index) => (
-                    <div className={`poster-wrapper ${isTop10 ? 'top10-wrapper' : ''}`} key={movie.id}>
+                    <div className={`poster-wrapper ${isTop10 ? 'top10-wrapper' : ''}`} key={index}>
                         {isTop10 && <div className="top10-number">{index + 1}</div>}
                         <img
                             className={`row-poster ${isTop10 ? 'top10-poster' : ''}`}
-                            src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                            src={
+                                movie.poster_path
+                                    ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+                                    : movie.poster?.startsWith('http')
+                                        ? movie.poster
+                                        : `${movie.poster?.replace(/^\/?/, '')}`
+                            }
                             alt={movie.name || movie.title}
                             onClick={() => props.onItemClick(movie)}
                         />

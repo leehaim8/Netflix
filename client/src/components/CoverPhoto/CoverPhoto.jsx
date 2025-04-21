@@ -10,7 +10,7 @@ function CoverPhoto(props) {
     const fetchData = async () => {
       const res = await fetch(`http://localhost:8080/${props.fetchUrl}`);
       const data = await res.json();
-      setCoverPhotos(data.results.slice(0, 4));
+      setCoverPhotos(data);
     };
 
     fetchData();

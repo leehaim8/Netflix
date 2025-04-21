@@ -1,5 +1,6 @@
 const API_KEY = process.env.API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
+const Media = require("../models/mediaModel");
 
 const movieController = {
     async getMovieAndTvById(req, res) {
@@ -27,37 +28,65 @@ const movieController = {
                 }
             }
 
+            const media = await Media.findOne({ id });
+            if (media) {
+                return res.json(media);
+            }
+
             return res.status(404).json({ error: 'No matching movie or tv show found with that ID and name' });
 
         } catch (error) {
             console.error('Error fetching from TMDB:', error);
             res.status(500).json({ error: 'Server error while fetching data' });
         }
-    }
-    ,
+    },
     async getPopularMoviesAndTv(req, res) {
         try {
-            const response = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}`);
-            const data = await response.json();
-            res.json(data);
+            const tmdbResponse = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}`);
+            const tmdbData = await tmdbResponse.json();
+            const tmdbResults = tmdbData.results || [];
+
+            const dbResults = await Media.find({});
+
+            const allMedia = [
+                ...tmdbResults.map(item => ({
+                    ...item,
+                    releaseDate: item.release_date || item.first_air_date || '0000-00-00'
+                })),
+                ...dbResults.map(item => ({
+                    ...item.toObject(),
+                    releaseDate: item.release_date || '0000-00-00'
+                }))
+            ];
+
+            const sorted = allMedia.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+
+            res.json(sorted.slice(0, 4));
+
         } catch (err) {
-            res.status(500).json({ message: 'Failed to fetch popular movies' });
+            console.error('Error fetching popular content:', err);
+            res.status(500).json({ message: 'Failed to fetch popular content' });
         }
     },
     async getNewMoviesAndTv(req, res) {
         try {
-            const [moviesRes, tvRes] = await Promise.all([
+            const [moviesRes, tvRes, dbItems] = await Promise.all([
                 fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`),
-                fetch(`${BASE_URL}/tv/on_the_air?api_key=${API_KEY}`)
+                fetch(`${BASE_URL}/tv/on_the_air?api_key=${API_KEY}`),
+                Media.find({})
             ]);
 
             const moviesData = await moviesRes.json();
             const tvData = await tvRes.json();
 
-            const combined = [...moviesData.results, ...tvData.results];
+            const tmdbItems = [...moviesData.results, ...tvData.results]
+
+            const combined = [...tmdbItems]
+                .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime())
 
             res.json({ results: combined });
         } catch (err) {
+            console.error('Error in getNewMoviesAndTv:', err);
             res.status(500).json({ message: 'Failed to fetch new movies and tv shows' });
         }
     },
@@ -82,21 +111,15 @@ const movieController = {
     },
     async getByGenreMoviesAndTv(req, res) {
         try {
-            const genreMap = {
-                Animation: 16,
-                Drama: 18,
-            };
-
+            const genreMap = { Animation: 16, Drama: 18 };
             const genreName = req.params.genreName;
             const genreId = genreMap[genreName];
+            if (!genreId) return res.status(400).json({ message: 'Unknown genre' });
 
-            if (!genreId) {
-                return res.status(400).json({ message: 'Unknown genre' });
-            }
-
-            const [moviesRes, tvRes] = await Promise.all([
+            const [moviesRes, tvRes, dbResults] = await Promise.all([
                 fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`),
-                fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`)
+                fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`),
+                Media.find({ genres: genreName })
             ]);
 
             const [moviesData, tvData] = await Promise.all([
@@ -104,7 +127,11 @@ const movieController = {
                 tvRes.json()
             ]);
 
-            const combined = [...moviesData.results, ...tvData.results].sort((a, b) => b.popularity - a.popularity);
+            const combined = [
+                ...(Array.isArray(moviesData.results) ? moviesData.results : []),
+                ...(Array.isArray(tvData.results) ? tvData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ];
 
             res.json({ results: combined });
         } catch (err) {
@@ -113,18 +140,32 @@ const movieController = {
     },
     async getPopularTv(req, res) {
         try {
-            const response = await fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`);
-            const data = await response.json();
-            res.json(data);
+            const [apiRes, dbResults] = await Promise.all([
+                fetch(`${BASE_URL}/trending/tv/week?api_key=${API_KEY}`),
+                Media.find({ media_type: 'tv' })
+            ]);
+            const apiData = await apiRes.json();
+            const combined = [
+                ...(Array.isArray(apiData.results) ? apiData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ];
+            res.json(combined.slice(0, 4));
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch popular TV shows' });
         }
     },
     async getNewTv(req, res) {
         try {
-            const response = await fetch(`${BASE_URL}/tv/on_the_air?api_key=${API_KEY}`);
-            const data = await response.json();
-            res.json(data);
+            const [apiRes, dbResults] = await Promise.all([
+                fetch(`${BASE_URL}/tv/on_the_air?api_key=${API_KEY}`),
+                Media.find({ media_type: 'tv' })
+            ]);
+            const apiData = await apiRes.json();
+            const combined = [
+                ...(Array.isArray(apiData.results) ? apiData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ];
+            res.json({ results: combined });
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch new TV shows' });
         }
@@ -141,48 +182,63 @@ const movieController = {
     },
     async getByGenreTv(req, res) {
         try {
-            const genreMap = {
-                Animation: 16,
-                Drama: 18,
-            };
-
+            const genreMap = { Animation: 16, Drama: 18 };
             const genreName = req.params.genreName;
             const genreId = genreMap[genreName];
+            if (!genreId) return res.status(400).json({ message: 'Unknown genre' });
 
-            if (!genreId) {
-                return res.status(400).json({ message: 'Unknown genre' });
-            }
+            const [apiRes, dbResults] = await Promise.all([
+                fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`),
+                Media.find({ media_type: 'tv', genres: genreName })
+            ]);
 
-            const response = await fetch(`${BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`);
-            const data = await response.json();
+            const apiData = await apiRes.json();
+            const combined = [
+                ...(Array.isArray(apiData.results) ? apiData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ];
 
-            const sorted = data.results.sort((a, b) => b.popularity - a.popularity);
-
-            res.json({ results: sorted });
+            res.json({ results: combined });
         } catch (err) {
             res.status(500).json({ message: `Failed to fetch ${req.params.genreName} TV shows` });
         }
     },
     async getPopularMovies(req, res) {
         try {
-            const response = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
-            const data = await response.json();
-            res.json(data);
+            const [apiRes, dbResults] = await Promise.all([
+                fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`),
+                Media.find({ media_type: 'movie' })
+            ]);
+
+            const apiData = await apiRes.json();
+            const combined = [
+                ...(Array.isArray(apiData.results) ? apiData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ];
+
+            res.json(combined.slice(0, 4));
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch popular movies' });
         }
     },
-
     async getNewMovies(req, res) {
         try {
-            const response = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
-            const data = await response.json();
-            res.json(data);
+            const [apiRes, dbResults] = await Promise.all([
+                fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`),
+                Media.find({ media_type: 'movie' })
+            ]);
+
+            const apiData = await apiRes.json();
+            const combined = [
+                ...(Array.isArray(apiData.results) ? apiData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ];
+
+            res.json({ results: combined });
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch new movies' });
         }
     },
-
     async getTop10Movies(req, res) {
         try {
             const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}`);
@@ -193,27 +249,25 @@ const movieController = {
             res.status(500).json({ message: 'Failed to fetch top 10 movies' });
         }
     },
-
     async getByGenreMovies(req, res) {
         try {
-            const genreMap = {
-                Animation: 16,
-                Drama: 18,
-            };
-
+            const genreMap = { Animation: 16, Drama: 18 };
             const genreName = req.params.genreName;
             const genreId = genreMap[genreName];
+            if (!genreId) return res.status(400).json({ message: 'Unknown genre' });
 
-            if (!genreId) {
-                return res.status(400).json({ message: 'Unknown genre' });
-            }
+            const [apiRes, dbResults] = await Promise.all([
+                fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`),
+                Media.find({ media_type: 'movie', genres: genreName })
+            ]);
 
-            const response = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
-            const data = await response.json();
+            const apiData = await apiRes.json();
+            const combined = [
+                ...(Array.isArray(apiData.results) ? apiData.results : []),
+                ...(Array.isArray(dbResults) ? dbResults : [])
+            ]
 
-            const sorted = data.results.sort((a, b) => b.popularity - a.popularity);
-
-            res.json({ results: sorted });
+            res.json({ results: combined });
         } catch (err) {
             res.status(500).json({ message: `Failed to fetch ${req.params.genreName} movies` });
         }

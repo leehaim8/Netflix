@@ -47,7 +47,7 @@ function ProtectedRoute({ children, allowedRoles }) {
                     if (userRole === 'admin') {
                         navigate(`/adminHomePage/${userIdFromToken}`);
                     } else {
-                        navigate(`/homepage/${userIdFromToken}`);
+                        // navigate(`//${userIdFromToken}`);
                     }
                 }
             } catch (error) {
