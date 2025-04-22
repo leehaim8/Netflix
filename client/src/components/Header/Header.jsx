@@ -54,7 +54,7 @@ function Header(props) {
                 <NotificationsNoneIcon className="header-icon" />
                 <div className="header-profile" onClick={handleProfileClick}>
                     <img
-                        src={`http://localhost:8080/Public/${props.image}`}
+                        src={`https://netflix-472l.onrender.com/Public/${props.image}`}
                         alt="Profile"
                         className="header-avatar-profile"
                     />

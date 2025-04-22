@@ -26,7 +26,7 @@ function Movies() {
     useEffect(() => {
         const fetchProfiles = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/profiles/byId/${profileId}`, {
+                const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/byId/${profileId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -67,7 +67,7 @@ function Movies() {
         };
 
         try {
-            const res = await fetch(`http://localhost:8080/api/profiles/addFavorite/${profileId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/addFavorite/${profileId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

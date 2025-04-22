@@ -22,7 +22,7 @@ function UserProfile() {
     useEffect(() => {
         const fetchProfiles = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/profiles/byUser/${userId}`, {
+                const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/byUser/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -54,7 +54,7 @@ function UserProfile() {
 
     const handleNameSave = async (id) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/profiles/updateProfile/${id}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/updateProfile/${id}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: nameInput }),
@@ -70,7 +70,7 @@ function UserProfile() {
 
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:8080/api/profiles/deleteProfile/${id}`, {
+            await fetch(`https://netflix-472l.onrender.com/api/profiles/deleteProfile/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
@@ -95,7 +95,7 @@ function UserProfile() {
         };
 
         try {
-            const res = await fetch(`http://localhost:8080/api/profiles/addProfile/${userId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/addProfile/${userId}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(newProfile)
@@ -117,7 +117,7 @@ function UserProfile() {
                             <DeleteIcon fontSize="small" />
                         </button>
                         <div className="avatar" onClick={() => handleProfileClick(profile._id)}>
-                            <img src={`http://localhost:8080/Public/${profile.image}`} alt="avatar" className="avatar-img" />
+                            <img src={`https://netflix-472l.onrender.com/Public/${profile.image}`} alt="avatar" className="avatar-img" />
                         </div>
                         {editingId === profile._id ? (
                             <input

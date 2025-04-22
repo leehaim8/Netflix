@@ -36,7 +36,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/Public', express.static(path.join(__dirname, 'Public')));
 
 app.use('/api/users', usersRouter);
 app.use('/api/profiles', profilesRouter);

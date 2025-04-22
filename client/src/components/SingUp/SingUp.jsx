@@ -83,7 +83,7 @@ function SingUp() {
         if (!valid) return;
 
         try {
-            const res = await fetch('http://localhost:8080/api/users/register', {
+            const res = await fetch('https://netflix-472l.onrender.com/api/users/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ emailOrPhone, password, role }),

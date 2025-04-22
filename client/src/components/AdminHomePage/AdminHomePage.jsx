@@ -43,7 +43,7 @@ function AdminHomePage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:8080/api/media/addMedia', {
+            const res = await fetch('https://netflix-472l.onrender.com/api/media/addMedia', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

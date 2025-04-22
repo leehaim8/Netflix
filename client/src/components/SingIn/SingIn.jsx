@@ -88,7 +88,7 @@ function SignIn() {
         setLoginError('');
 
         try {
-            const res = await fetch('http://localhost:8080/api/users/login', {
+            const res = await fetch('https://netflix-472l.onrender.com/api/users/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ emailOrPhone, password }),

@@ -35,7 +35,7 @@ function NewAndPopular() {
     useEffect(() => {
         const getProfile = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/profiles/byId/${profileId}`, {
+                const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/byId/${profileId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (!res.ok) throw new Error('Failed to fetch profile');
@@ -54,7 +54,7 @@ function NewAndPopular() {
 
         setIsLoading(true);
         try {
-            const res = await fetch(`http://localhost:8080/api/moviesAndTv/popularAndNew?page=${pageNumber}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/moviesAndTv/popularAndNew?page=${pageNumber}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -127,7 +127,7 @@ function NewAndPopular() {
         };
 
         try {
-            const res = await fetch(`http://localhost:8080/api/profiles/addFavorite/${profileId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/addFavorite/${profileId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -26,7 +26,7 @@ function MyList() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/profiles/byId/${profileId}`, {
+                const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/byId/${profileId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -49,7 +49,7 @@ function MyList() {
 
     const fetchFavorites = useCallback(async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/profiles/favorites/${profileId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/favorites/${profileId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -92,7 +92,7 @@ function MyList() {
         };
 
         try {
-            const res = await fetch(`http://localhost:8080/api/profiles/addFavorite/${profileId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/profiles/addFavorite/${profileId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

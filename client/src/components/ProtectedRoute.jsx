@@ -22,7 +22,7 @@ function ProtectedRoute({ children, allowedRoles }) {
                     return;
                 }
 
-                const res = await fetch('http://localhost:8080/api/users/verify', {
+                const res = await fetch('https://netflix-472l.onrender.com/api/users/verify', {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

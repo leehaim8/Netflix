@@ -20,7 +20,7 @@ function ReviewPage() {
         }
 
         try {
-            const res = await fetch(`http://localhost:8080/api/reviews/${profileId}/${itemId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/reviews/${profileId}/${itemId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

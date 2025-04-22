@@ -39,7 +39,7 @@ function Model(props) {
         const fetchData = async () => {
             if (!props.modalData || !props.modalData.id) return;
             try {
-                const res = await fetch(`http://localhost:8080/api/moviesAndTv/byId/${props.modalData.id}?name=${props.modalData.title || props.modalData.name}`, {
+                const res = await fetch(`https://netflix-472l.onrender.com/api/moviesAndTv/byId/${props.modalData.id}?name=${props.modalData.title || props.modalData.name}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -61,7 +61,7 @@ function Model(props) {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/reviews/${props.modalData.id}`, {
+                const res = await fetch(`https://netflix-472l.onrender.com/api/reviews/${props.modalData.id}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const fetched = await res.json();
@@ -82,7 +82,7 @@ function Model(props) {
 
     const handleDelete = async (reviewId) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/reviews/${reviewId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/reviews/${reviewId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -97,7 +97,7 @@ function Model(props) {
 
     const handleEdit = async (reviewId, index) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/reviews/${reviewId}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com/api/reviews/${reviewId}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,

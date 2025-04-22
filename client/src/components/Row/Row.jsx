@@ -16,7 +16,7 @@ const Row = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await fetch(`http://localhost:8080${props.fetchUrl}`, {
+            const res = await fetch(`https://netflix-472l.onrender.com${props.fetchUrl}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
