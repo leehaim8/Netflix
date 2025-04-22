@@ -95,7 +95,6 @@ function HomePage() {
     return (
         <div className="app">
             {profile.image && <Header image={profile.image} />}
-
             <main className="main-content">
                 <CoverPhoto fetchUrl="api/moviesAndTv/popular" onMoreInfo={handleShowModal} />
                 <Row title="New on Netflix" fetchUrl="/api/moviesAndTv/new" onItemClick={handleShowModal} />
@@ -113,7 +112,6 @@ function HomePage() {
                     />
                 )}
             </main>
-
             <HomePageFooter />
         </div>
     );

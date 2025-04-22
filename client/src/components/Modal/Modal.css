@@ -12,15 +12,19 @@
 }
 
 .modal-content {
-    width: 50%;
-    max-width: 1000px;
+    width: 60%;
+    max-width: 800px;
+    height: auto;
+    max-height: 90vh;
     background: #141414;
     color: white;
     border-radius: 10px;
-    overflow: hidden;
+    overflow-y: auto;
     position: relative;
     font-family: Arial, sans-serif;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
 }
+
 
 .modal-close {
     position: absolute;
@@ -211,4 +215,61 @@
     color: white;
     font-size: 18px;
     padding: 20px;
+}
+
+.modal-reviews {
+    margin: 0 20px;
+    background: #111;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.review-card {
+    background: #1e1e1e;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+.review-stars {
+    color: gold;
+    font-size: 16px;
+}
+
+.review-text {
+    color: #eee;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.private-tag {
+    background: #444;
+    color: #ccc;
+    padding: 3px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.review-actions button {
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 16px;
+}
+
+.edit-review textarea {
+    width: 100%;
+    min-height: 60px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

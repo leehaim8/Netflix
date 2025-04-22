@@ -97,7 +97,6 @@ function Movies() {
     return (
         <div className="app">
             {profile.image && <Header image={profile.image} />}
-
             <main className="main-content">
                 <CoverPhoto fetchUrl="api/moviesAndTv/movie/popular" onMoreInfo={handleShowModal} />
                 <Row title="New on Netflix" fetchUrl="/api/moviesAndTv/movie/new" onItemClick={handleShowModal} />

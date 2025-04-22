@@ -53,14 +53,12 @@ function ReviewPage() {
     return (
         <div className="review-container">
             <h2 className="review-title">Write a Review</h2>
-
             <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="What did you think about the show?"
                 className="review-textarea"
             />
-
             <div className="review-options">
                 <div className="visibility-options">
                     <label>
@@ -82,7 +80,6 @@ function ReviewPage() {
                         Private
                     </label>
                 </div>
-
                 <div className="star-rating">
                     {[1, 2, 3, 4, 5].map(num => (
                         <span
@@ -93,7 +90,6 @@ function ReviewPage() {
                     ))}
                 </div>
             </div>
-
             <button className="submit-button" onClick={handleSubmit}>Submit Review</button>
         </div>
     );

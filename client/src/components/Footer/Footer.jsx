@@ -19,13 +19,11 @@ function Footer() {
             <div className="footer-top">
                 <p>Questions? Call <span className="phone-number">1-844-505-2993</span></p>
             </div>
-
             <div className="footer-links">
                 {links.map((text, index) => (
                     <span key={index} className="footer-link">{text}</span>
                 ))}
             </div>
-
             <div className="footer-bottom">
                 <select className="language-select">
                     <option>English</option>

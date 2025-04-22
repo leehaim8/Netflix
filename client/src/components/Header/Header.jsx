@@ -11,6 +11,7 @@ function Header(props) {
     const profileId = pathSegments[pathSegments.length - 1];
     const [showDropdown, setShowDropdown] = useState(false);
     const navigate = useNavigate();
+    const userId = sessionStorage.getItem("userId");
 
     const navLinks = [
         { label: 'Home', path: `/homepage/${profileId}` },
@@ -60,7 +61,7 @@ function Header(props) {
                     <ArrowDropDownIcon className="header-dropdown-icon" />
                     {showDropdown && (
                         <div className="header-dropdown-menu">
-                            <p onClick={() => navigate(`/userprofile/${profileId}`)}>Manage Profiles</p>
+                            <p onClick={() => navigate(`/userprofile/${userId}`)}>Manage Profiles</p>
                             <p onClick={handleSignOut}>Sign out</p>
                         </div>
                     )}

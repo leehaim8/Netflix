@@ -34,7 +34,7 @@ function CoverPhoto(props) {
     };
 
     fetchData();
-  }, [props.fetchUrl, navigate]);
+  }, [props.fetchUrl, token, navigate]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,7 +61,6 @@ function CoverPhoto(props) {
         <div className="netflix-title">
           <span className="n-letter">N</span><span className="rest-title"> SERIES</span>
         </div>
-
         <h1 className="cover-photo-title">{formattedTitle}</h1>
         <p className="cover-photo-description">{movie.overview}</p>
         <button className="cover-photo-button" onClick={() => props.onMoreInfo(movie)}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Modal.css';
 
 const genreTagsMap = {
@@ -24,9 +24,16 @@ const ratingWarningsMap = {
 
 function Model(props) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const pathSegments = location.pathname.split('/');
+    const profileId = pathSegments[pathSegments.length - 1];
     const [data, setData] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editedText, setEditedText] = useState('');
     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1]
         || sessionStorage.getItem('token');
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -50,6 +57,66 @@ function Model(props) {
 
         fetchData();
     }, [props.modalData, token, navigate]);
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const res = await fetch(`http://localhost:8080/api/reviews/${props.modalData.id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const fetched = await res.json();
+                setReviews(fetched);
+            } catch (err) {
+                console.error("Failed to fetch reviews:", err);
+            }
+        };
+
+        if (props.modalData?.id) {
+            fetchReviews();
+        }
+    }, [props.modalData, token]);
+
+    const visibleReviews = reviews.filter(r =>
+        r.isPublic || r.profileId === profileId
+    );
+
+    const handleDelete = async (reviewId) => {
+        try {
+            const res = await fetch(`http://localhost:8080/api/reviews/${reviewId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setReviews(reviews.filter(r => r.id !== reviewId));
+                props.onClose();
+            }
+        } catch (err) {
+            console.error("Delete failed:", err);
+        }
+    };
+
+    const handleEdit = async (reviewId, index) => {
+        try {
+            const res = await fetch(`http://localhost:8080/api/reviews/${reviewId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: editedText })
+            });
+            if (res.ok) {
+                const updated = [...reviews];
+                updated[index].text = editedText;
+                setReviews(updated);
+                setEditingIndex(null);
+                setEditedText('');
+            }
+        } catch (err) {
+            console.error("Edit failed:", err);
+        }
+    };
+
 
     if (!data) return <div className="loading-modal">Loading...</div>;
 
@@ -81,16 +148,14 @@ function Model(props) {
         <div className="modal-overlay">
             <div className="modal-content">
                 <button className="modal-close" onClick={props.onClose}>✕</button>
-
                 <div className="modal-image-container">
                     <img className="modal-cover" src={
-                        data.poster_path
-                            ? `https://image.tmdb.org/t/p/w200${data.poster_path}`
-                            : data.poster?.startsWith('http')
-                                ? data.poster
-                                : `${data.poster?.replace(/^\/?/, '')}`
+                        data.backdrop_path
+                            ? `https://image.tmdb.org/t/p/w200${data.backdrop_path}`
+                            : data.backdrop?.startsWith('http')
+                                ? data.backdrop
+                                : `${data.backdrop?.replace(/^\/?/, '')}`
                     } alt={data.title || data.name} />
-
                     <div className="modal-title-overlay-bottom">
                         <div className="netflix-title">
                             <span className="n-letter">N</span><span className="rest-title"> SERIES</span>
@@ -105,7 +170,6 @@ function Model(props) {
                         </div>
                     </div>
                 </div>
-
                 <div className="modal-info-container">
                     <div className="modal-left">
                         <div className="modal-subinfo">
@@ -116,7 +180,6 @@ function Model(props) {
                                 <span className="tag hd">HD</span>
                                 <span className="tag">AD</span>
                             </div>
-
                             <div className="tag-line">
                                 <span className="tag tv-ma hd">{rating}</span>
                                 {warnings.map((warn, i) => (
@@ -126,12 +189,43 @@ function Model(props) {
                         </div>
                         <p className="modal-overview">{data.overview}</p>
                     </div>
-
                     <div className="modal-right">
                         <div className="modal-cast"><b>Cast:</b> {castList}</div>
                         <div className="modal-genres"><b>Genres:</b> {genres.join(', ')}</div>
                         <div className="modal-tags"><b>This show is:</b> {autoTags.join(', ') || 'N/A'}</div>
                     </div>
+                </div>
+                <div className="modal-reviews">
+                    <h3>Reviews</h3>
+                    {visibleReviews.length === 0 ? (
+                        <p>No reviews yet.</p>
+                    ) : (
+                        visibleReviews.map((review, index) => (
+                            <div key={index} className="review-card">
+                                <div className="review-header">
+                                    <div className="review-stars">⭐️ {review.stars}/5</div>
+                                    {review.profileId === profileId && (
+                                        <div className="review-actions">
+                                            <button onClick={() => {
+                                                setEditingIndex(index);
+                                                setEditedText(review.text);
+                                            }}>🖉</button>
+                                            <button onClick={() => handleDelete(review._id)}>🗑</button>
+                                        </div>
+                                    )}
+                                </div>
+                                {editingIndex === index ? (
+                                    <div className="edit-review">
+                                        <textarea value={editedText} onChange={e => setEditedText(e.target.value)} />
+                                        <button onClick={() => handleEdit(review._id, index)}>💾 Save</button>
+                                    </div>
+                                ) : (
+                                    <p className="review-text">"{review.text}"</p>
+                                )}
+                                {!review.isPublic && <span className="private-tag">Private</span>}
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>

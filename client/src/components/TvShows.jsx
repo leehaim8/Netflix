@@ -75,7 +75,6 @@ function TvShows() {
                 body: JSON.stringify(favorite)
             });
 
-            
             if (res.status === 401 || res.status === 403) {
                 navigate('/');
                 return;
@@ -95,7 +94,6 @@ function TvShows() {
     return (
         <div className="app">
             {profile.image && <Header image={profile.image} />}
-
             <main className="main-content">
                 <CoverPhoto fetchUrl="api/moviesAndTv/tv/popular" onMoreInfo={handleShowModal} />
                 <Row title="New on Netflix" fetchUrl="/api/moviesAndTv/tv/new" onItemClick={handleShowModal} />
