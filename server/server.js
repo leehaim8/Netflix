@@ -11,17 +11,17 @@ const { movieRouter } = require('./routers/movieRouter');
 const { reviewRouter } = require('./routers/reviewRouter');
 const { mediaRouter } = require('./routers/mediaRouter');
 
-// app.use((req, res, next) => {
-//     if (req.headers["x-forwarded-proto"] !== "https" && process.env.NODE_ENV === "production") {
-//         return res.redirect(`https://${req.headers.host}${req.url}`);
-//     }
-//     next();
-// });
+app.use((req, res, next) => {
+    if (req.headers["x-forwarded-proto"] !== "https" && process.env.NODE_ENV === "production") {
+        return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+});
 
 app.use(cors({
     origin: (origin, callback) => {
         const allowedOrigins = [
-            "http://localhost:3000",
+            "https://leeha-final-project-netfilx.netlify.app",
         ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
