@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 app.use(cors({
     origin: (origin, callback) => {
         const allowedOrigins = [
-            "https://leeha-final-project-netfilx.netlify.app",
+            "https://6808ab796c3cc2f4c34d59f8--leeha-final-project.netlify.app",
         ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
