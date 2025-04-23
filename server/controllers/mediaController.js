@@ -23,7 +23,7 @@ const mediaController = {
                 popularity,
                 original_language: originalLanguage,
                 adult,
-                id,
+                id:tmdbId,
                 tags: tags?.split(',').map(t => t.trim()),
                 cast: cast?.split(',').map(c => c.trim())
             });
